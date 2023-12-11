@@ -21,6 +21,8 @@ struct Image {
 mut:
 	coords [][]rune
 	galaxies []Galaxy
+	warps_x []int
+	warps_y []int
 }
 
 fn print_2d_array[T](arr T) {
@@ -47,8 +49,7 @@ fn (mut i Image) expand() {
 	mut y := 0
 	for ; y < i.coords.len; y++ {
 		if `#` !in i.coords[y] {
-			i.coords.insert(y, []rune{len: i.coords[y].len, init: `.`})
-			y++
+			i.warps_y << y
 		}
 	}
 	mut x := 0
@@ -59,24 +60,27 @@ fn (mut i Image) expand() {
 			check << i.coords[y][x]
 		}
 		if `#` !in check {
-			y = 0
-			for ; y < i.coords.len; y++ {
-				i.coords[y].insert(x, `.`)
-			}
-			x++
+			i.warps_x << x
 		}
 	}
 }
 
-fn (mut i Image) gather_galaxies() {
+fn (mut i Image) gather_galaxies(warp_speed int) {
 	mut id := 1
+	mut y_warp := 0
+	mut x_warp := 0
 	for y, line in i.coords {
+		x_warp = 0
+		if y in i.warps_y { y_warp += warp_speed-1 }
 		for x, c in line {
+			if x in i.warps_x { x_warp += warp_speed-1 }
 			if c == `#` {
-				i.galaxies << Galaxy {id, x, y}
+				i.galaxies << Galaxy {id, x_warp, y_warp}
 				id++
 			}
+			x_warp++
 		}
+		y_warp++
 	}
 }
 
@@ -95,9 +99,9 @@ fn main() {
 	mut img := Image.new(lines)
 	img.expand()
 	// print_2d_array(img.coords)
-	img.gather_galaxies()
+	img.gather_galaxies(1000000)
 	gals := create_pairs(img.galaxies)
-	mut res := 0
+	mut res := i64(0)
 	for pair in gals {
 		res += pair[0].calc_distance(pair[1])
 	}
