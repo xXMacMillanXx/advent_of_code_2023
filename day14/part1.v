@@ -17,21 +17,23 @@ fn Board.new(lines []string) Board {
 }
 
 fn (mut b Board) tilt_north() {
-	for y := 1; y < b.layout.len; y++ {
-		for x := 0; x < b.layout[y].len; x++ {
+	for x := 0; x < b.layout[0].len; x++ {
+		mut count := 0
+		mut y := b.layout.len - 1
+		for ; y >= 0; y-- {
 			if b.layout[y][x] == `O` {
-				mut ray := y - 1
-				for ; ray >= 0; ray-- {
-					if b.layout[ray][x] == `O` || b.layout[ray][x] == `#` {
-						ray++
-						break
-					}
-				}
-				if ray == -1 { ray = 0 }
-				if ray == y { continue }
-				b.layout[ray][x] = `O`
 				b.layout[y][x] = `.`
+				count++
+				continue
 			}
+			if b.layout[y][x] == `#` {
+				for ; count > 0; count-- {
+					b.layout[y+count][x] = `O`
+				}
+			}
+		}
+		for ; count > 0; count-- {
+			b.layout[y+count][x] = `O`
 		}
 	}
 }
