@@ -139,36 +139,40 @@ fn print_arr[T](arr [][]T) {
 fn main() {
 	lines := os.read_lines('input.txt')!
 	mut board := Board.new(lines)
-	// at a certain stage, the pattern of calc() keeps repeating
-	// so one of the numbers in the repeating pattern has to be the solution
-	// now I just need to find out, how to best upscale, once I found the repeating pattern.
-	// TODO
-	// track calc solution till number repeats, track till second number repeat, try to scale index to or close to 1000000000
 	mut tracking := []int{}
-	mut i := 1
-	for ; i < 200; i++ { // 1000000000
+	mut spin := 0
+	// bring spin to beginning of cycling pattern
+	for ; spin < 200; spin++ {
 		board.spin()
 		res := board.calc()
 		if res in tracking {
 			tracking = []int{}
+			spin++
 			break
 		}
 		tracking << res
 	}
-	x := i
-	for ; i < 200; i++ { // 1000000000
+	// pre_offset := spin
+	// find length of cycling pattern, while adding to spin
+	for ; spin < 200; spin++ {
 		board.spin()
 		res := board.calc()
 		if res in tracking {
 			tracking << res
+			spin++
 			break
 		} else {
 			tracking << res
 		}
 	}
-	for (1000000000 - i) % (tracking.len - 1) != 0 {
+	// calc how many steps need to be taken to reach the same value as spinning the board 1000000000 times
+	post_offset := (1000000000 - spin) % tracking.len
+	// groups := (1000000000 - spin) / tracking.len
+	// println('${groups} ${post_offset} ${tracking.len} ${pre_offset} ${spin - pre_offset}')
+	for _ in 0..post_offset {
 		board.spin()
-		i++
+		spin++
 	}
-	println(board.calc()) // no right solution yet, probably a problem with the index (wrong index)
+	// println(spin + groups * tracking.len)
+	println(board.calc())
 }
