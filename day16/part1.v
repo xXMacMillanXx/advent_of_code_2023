@@ -62,11 +62,11 @@ fn in_bounds(v Vec, l Layout) bool {
 }
 
 fn (mut r Ray) energize() {
-	r.layout[r.pos.y][r.pos.x].is_energized = true
+	r.tile().is_energized = true
 }
 
-fn (r Ray) tile() Tile {
-	return r.layout[r.pos.y][r.pos.x]
+fn (r Ray) tile() &Tile {
+	return &r.layout[r.pos.y][r.pos.x]
 }
 
 fn (mut r Ray) move() {
