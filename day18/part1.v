@@ -83,11 +83,11 @@ fn (mut p Plan) move(dir MoveDirection, color string) {
 	p.layout[p.pos.y][p.pos.x] = Tile.new(`#`, color)
 }
 
-fn (p Plan) get_tile(pos Position) !Tile {
+fn (p Plan) get_tile(pos Position) ?Tile {
 	if pos.x >= 0 && pos.x < p.layout[pos.y].len && pos.y >= 0 && pos.y < p.layout.len {
 		return p.layout[pos.y][pos.x]
 	}
-	return error('Tile out of bounds!')
+	return none
 }
 
 fn (p Plan) skip(po Position, r rune) int {
